@@ -8,9 +8,9 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export default function Page() {
-  const session = useSession();
+  const {data:session} = useSession();
   const router = useRouter()
-  if(session.data?.user){
+  if(session && session.user){
     router.push("/")
   }
   const [loading, setLoading] = useState(false)

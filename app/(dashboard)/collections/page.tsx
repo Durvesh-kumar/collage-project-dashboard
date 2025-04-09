@@ -16,7 +16,7 @@ if(session && (session.role === "USER")){
   redirect("/collections/all-collections")
 }
 
-if (session && (session.collectionId || session.role !== "USER")) {
+if (session && (session.collectionId)) {
   redirect("/collections/collection-dashboard")
 } else if(session && (!session.collectionId)) {
   return <NoCreateCollection/>
