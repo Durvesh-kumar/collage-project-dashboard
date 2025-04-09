@@ -16,9 +16,11 @@ if(session && (session.role === "USER")){
   redirect("/collections/all-collections")
 }
 
-if (session && (session.collectionId)) {
+const collectionId = await session && session?.collectionId
+
+if (collectionId) {
   redirect("/collections/collection-dashboard")
-} else if(session && (!session.collectionId)) {
+} else if(!collectionId) {
   return <NoCreateCollection/>
 }
   
