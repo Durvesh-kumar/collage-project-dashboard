@@ -4,8 +4,6 @@ import sendEmail from "@/helpers/nodemailer";
 import { prisma } from "@/prisma";
 
 export const POST = async (req: NextRequest)=> {
-    console.log("Thenks call me");
-    
     
     try {
         const {name, email, password, conformPassword} = await req.json();
