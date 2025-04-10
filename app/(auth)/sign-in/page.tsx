@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation'
 export default function Page() {
   const {data:session} = useSession();
   const router = useRouter()
-  if(session && session.user){
+  const users = session && session.user
+  if(users){
     router.push("/")
   }
   const [loading, setLoading] = useState(false)

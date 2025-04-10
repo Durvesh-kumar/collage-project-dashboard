@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { DataTable } from "@/components/coustemUI/DataTable";
+import { redirect } from "next/navigation";
 
 export default async function page() {
   // Authenticate the user
@@ -13,19 +14,19 @@ export default async function page() {
 
   // Redirect if the user is not logged in
   if (!session) {
-    window.location.replace("/sign-in");
+    redirect("/sign-in");
   }
 
   // Redirect if the user is a regular user (not authorized to view this page)
-  if (session && session.role === "USER") {
-    window.location.replace("/collections");
+  if (session && (session.role === "USER")) {
+    redirect("/collections");
   }
 
-  const collectionId = session && session.collectionId
+  const collectionId = session &&( session.collectionId)
 
   // Redirect if the user does not have a collection
   if (!collectionId) {
-    window.location.replace("/collections/create-collection");
+    redirect("/collections/create-collection");
   }
 
   // Fetch products associated with the user's collection
@@ -38,11 +39,11 @@ export default async function page() {
 
   if(data.error){
     toast.error(data.message);
-    window.location.replace("/collections")
+    redirect("/collections")
   }
   // Redirect if no products are found
   if (!data.products || data.products.length === 0) {
-    window.location.replace("/products/create-product");
+    redirect("/products/create-product");
   }
   
   return (

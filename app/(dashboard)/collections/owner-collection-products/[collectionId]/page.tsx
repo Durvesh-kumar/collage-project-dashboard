@@ -6,6 +6,7 @@ import { PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import ProductsTable from "@/app/(dashboard)/products/components/ProductsTable";
 import { DataTable } from "@/components/coustemUI/DataTable";
+import { redirect } from "next/navigation";
 
 const fetchData = async(collectionId:string)=>{
     const res = await fetch(`/api/collections/products/${collectionId}`, {
@@ -22,19 +23,19 @@ export default async function page({params}:{params: Promise<{CollectionId: stri
 
     if(!collectionId){
         toast.success("Collection not found")
-        window.location.replace("/collections");
+        redirect("/collections");
     }
   // Authenticate the user
   const session = await auth();
 
   // Redirect if the user is not logged in
   if (!session) {
-    window.location.replace("/sign-in");
+    redirect("/sign-in");
   }
 
   // Redirect if the user is a regular user (not authorized to view this page)
   if (session && session.role !== "OWNER") {
-    window.location.replace("/collections");
+    redirect("/collections");
   }
 
   // Redirect if the user does not have a collection
@@ -44,11 +45,11 @@ export default async function page({params}:{params: Promise<{CollectionId: stri
 
   if(data.error){
     toast.error(data.message);
-    window.location.replace("/collections")
+    redirect("/collections")
   }
   // Redirect if no products are found
   if (!data.products || data.products.length === 0) {
-    window.location.replace("/products/create-product");
+    redirect("/products/create-product");
   }
   
   return (

@@ -1,4 +1,5 @@
 import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import React from 'react'
 import toast from 'react-hot-toast'
 
@@ -6,11 +7,13 @@ export default async function page() {
     const session = await auth()
 
     if(!session){
-        window.location.href="/collections"
+        redirect("/collections")
     }
 
-    if(session && !session.collectionId){
-      window.location.href="collections/create-collection"
+    const collectionId = session &&(session.collectionId)
+
+    if(collectionId){
+      redirect("collections/create-collection")
     }
 
     const res = await fetch( `/api/collections/${session?.collectionId}`, {
@@ -29,9 +32,8 @@ export default async function page() {
 
     if(data.error || !data.collection){
       toast.error(data.message);
-      window.location.href="/collections"
+      redirect("/collections")
     }
-    console.log(data.collection);
     
   return (
     <div>page</div>

@@ -1,19 +1,22 @@
 import React from 'react'
 import { CollectionForm } from '../components/CollectionForm'
 import { auth } from '@/auth'
+import { redirect } from 'next/navigation';
 
 export default async function page() {
   const session = await auth()
   if(!session){
-    window.location.replace("/sign-in");
+    redirect("/sign-in");
   }
 
-  if(session &&(session.collectionId)){
-    window.location.replace("/collections/collection-dashboard");
+  const collectionId = session &&(session.collectionId)
+
+  if(collectionId){
+    redirect("/collections/collection-dashboard");
   }
 
   if(session &&(session.role === "USER")){
-    window.location.replace("/collections");
+    redirect("/collections");
   }
   return (
     <div>

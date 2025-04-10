@@ -2,6 +2,7 @@ import React from 'react'
 import toast from 'react-hot-toast';
 import UsersTable from './components/UserTable';
 import { DataTable } from '@/components/coustemUI/DataTable';
+import { redirect } from 'next/navigation';
 
 export default async function page() {
 
@@ -14,7 +15,7 @@ export default async function page() {
 
     if(!data.users || data.users.length === 0){
         toast.error("No users found");
-        window.location.replace("/")
+        redirect("/")
     }
 
   return (
