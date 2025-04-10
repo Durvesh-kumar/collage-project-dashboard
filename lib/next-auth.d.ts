@@ -1,6 +1,6 @@
 
-type credentialLogin ={
-    email: string,
+interface CredentialLogin {
+    email: string;
     password: string
 }
 

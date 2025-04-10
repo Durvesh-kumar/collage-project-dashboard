@@ -12,7 +12,7 @@ export async function logOut(){
     revalidatePath('/');
 }
 
-export async function doCredentialLogin(values:credentialLogin){
+export async function doCredentialLogin(values:any){
     try {
         const response = await signIn("credentials", {
             email: values.email,
