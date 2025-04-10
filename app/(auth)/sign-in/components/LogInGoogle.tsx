@@ -1,14 +1,9 @@
 "use client";
-import { signIn } from "next-auth/react";
+import { logIn } from "@/lib/actions/auth";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 
 export default function LogInGoogle() {
-
-  async function logIn(provider: string){
-      await signIn("google", {redirectTo: "/"});
-      window.location.replace('/');
-  }
   return (
     <button
       type="button"
