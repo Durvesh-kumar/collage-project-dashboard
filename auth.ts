@@ -6,6 +6,10 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 
+
+const GOOGLE_AUTH_ID = process.env.GOOGLE_AUTH_ID!
+const GOOGLE_AUTH_SECRET = process.env.GOOGLE_AUTH_SECRET!
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -22,8 +26,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
     Google({
-      clientId: process.env.GOOGLE_AUTH_ID!,
-      clientSecret: process.env.GOOGLE_AUTH_SECRET!,
+      clientId: GOOGLE_AUTH_ID,
+      clientSecret: GOOGLE_AUTH_SECRET,
       // authorization: {
       //   url: "https://accounts.google.com/o/oauth2/v2/auth",
       //   prisma: {
@@ -125,3 +129,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
+
+export {handlers as GET , handlers as POST}
