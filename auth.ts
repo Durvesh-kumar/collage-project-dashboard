@@ -11,8 +11,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   providers: [
     Facebook({
-      clientId: process.env.FACEBOOK_AUTH_ID,
-      clientSecret: process.env.FACEBOOK_AUTH_SECRET,
+      clientId: process.env.FACEBOOK_AUTH_ID!,
+      clientSecret: process.env.FACEBOOK_AUTH_SECRET!,
       authorization: {
         prisma: {
           prompt: "consent",
@@ -22,16 +22,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
     Google({
-      clientId: process.env.GOOGLE_AUTH_ID,
-      clientSecret: process.env.GOOGLE_AUTH_SECRET,
-      authorization: {
-        url: "https://accounts.google.com/o/oauth2/v2/auth",
-        prisma: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
+      clientId: process.env.GOOGLE_AUTH_ID!,
+      clientSecret: process.env.GOOGLE_AUTH_SECRET!,
+      // authorization: {
+      //   url: "https://accounts.google.com/o/oauth2/v2/auth",
+      //   prisma: {
+      //     prompt: "consent",
+      //     access_type: "offline",
+      //     response_type: "code",
+      //   },
+      // },
     }),
 
     Credentials({
