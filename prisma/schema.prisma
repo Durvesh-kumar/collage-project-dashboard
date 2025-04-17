@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum roleUser {
+  USER
+  ADMIN
+  OWNER
+}
+model User {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String?         @unique
+  emailVerified   DateTime?
+  isVerified      Boolean         @default(true)
+  isProvider      Boolean         @default(true)
+  password        String?
+  verifyOtp       String?
+  verifyOtpExpiry Int?
+  forgotOtp       String?
+  forgotOtpExpiry Int?
+  forgotVerify    Boolean        @default(false)
+  image           String?
+  collectionId    String?        @db.ObjectId
+  role            roleUser        @default(USER)
+  accounts        Account[]
+  sessions        Session[]
+  collections     Collection[]
+  // Removed duplicate field definition for "collections"
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  collections       String? @db.ObjectId
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+ 
+  @@unique([provider, providerAccountId])
+}
+ 
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  collectionId  String?  @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  collectionId     String? @db.ObjectId
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @id @map("_id")
+  userId               String  @db.ObjectId
+  providerAccountId    String
+  credentialPublicKey  String
+  collections          String? @db.ObjectId
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([userId, credentialID])
+}
+
+model Collection {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String    @unique
+  description String
+  image       String
+  state       String
+  city        String
+  country     String    @default("India")
+  phoneNo     String
+  pinCode     String
+  address     String
+  products    Product[]  // Relation to the Product model
+  orders      Order[]  // Relation to the orders model
+  userId      String?    @unique @db.ObjectId
+  user        User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  title       String
+  description String
+  price       Float
+  pay         Float
+  media       String[]
+  category    String
+  brand       String
+  colors      String[]
+  tags        String[]
+  sizes       String[]
+  collectionId String    @db.ObjectId
+  collection  Collection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  orders      OrderProduct[] // Relation to the OrderProduct model
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Order {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  colectionId   String       @db.ObjectId
+  colection     Collection         @relation(fields: [colectionId], references: [id], onDelete: Cascade)
+  products      OrderProduct[] // Relation to the OrderProduct model
+  totalPrice    Float
+  status        OrderStatus  @default(PENDING)
+  shippingInfo  ShippingInfo[]
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod String
+  shippingMethod String
+  shippingPrice Float
+  shippingInfoId String? @db.ObjectId
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model OrderProduct {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String    @db.ObjectId
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String    @db.ObjectId
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity   Int
+  price      Float
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model ShippingInfo {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String    @db.ObjectId
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  address    String
+  city       String
+  state      String
+  country    String    @default("India")
+  pinCode    String
+  phoneNo    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
